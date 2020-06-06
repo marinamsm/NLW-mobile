@@ -19,7 +19,7 @@ interface Data {
     uf: string,
     whatsapp: string,
     email: string,
-  };
+  },
   items: {
     title: string
   }[]
