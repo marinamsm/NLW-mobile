@@ -1,10 +1,50 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
 
 const Detail = () => {
-    return (
-        <View style={styles.container}/>
-    )
+  const navigation = useNavigation();
+
+  function handleNavigationBackwards() {
+    navigation.navigate('Points');
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={handleNavigationBackwards}>
+            <Icon name='arrow-left' size={20} color='#34cb79' />
+        </TouchableOpacity>
+
+        <Image source={{
+          uri: 'https://live.staticflickr.com/4123/4857121027_6a65047cbe_b.jpg'
+        }}
+        style={styles.pointImage}
+        />
+
+        <Text style={styles.pointName}>Mercadão do João</Text>
+        <Text style={styles.pointItems}>Baterias, Pilhas etc</Text>
+
+        <View style={styles.address}>
+          <Text style={styles.addressTitle}>Endereço</Text>
+          <Text style={styles.addressContent}>Belo Horizonte/MG</Text>
+        </View>
+      </View>
+
+      <View style={styles.footer}>
+        <RectButton style={styles.button}>
+          <FontAwesome name='whatsapp' size={20} color='#fff' />
+          <Text style={styles.buttonText}>Whatsapp</Text>
+        </RectButton>
+        <RectButton style={styles.button}>
+          <Icon name='mail' size={20} color='#fff' />
+          <Text style={styles.buttonText}>E-mail</Text>
+        </RectButton>
+      </View>
+    </SafeAreaView>
+  )
 }
 
 export default Detail;
