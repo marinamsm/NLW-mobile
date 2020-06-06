@@ -1,0 +1,24 @@
+import React from 'react';
+import { View } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+
+import Home from './pages/Home/index';
+import Points from './pages/Points/index';
+import Detail from './pages/Detail/index';
+
+const AppStack = createStackNavigator();
+
+const Routes = () => {
+    return (
+        <NavigationContainer>
+            <AppStack.Navigator headerMode="none">
+                <AppStack.Screen name="Home" component={Home} />
+                <AppStack.Screen name="Points" component={Points} />
+                <AppStack.Screen name="Detail" component={Detail} />
+            </AppStack.Navigator>
+        </NavigationContainer>
+    )
+}
+
+export default Routes;
