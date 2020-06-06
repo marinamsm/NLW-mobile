@@ -1,15 +1,71 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, Linking } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import * as MailComposer from 'expo-mail-composer';
 import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
+import api from '../../services/api';
+
+interface Params {
+  pointId: number
+}
+
+interface Data {
+  point: {
+    id: number,
+    name: string,
+    image: string,
+    city: string,
+    uf: string,
+    whatsapp: string,
+    email: string,
+  };
+  items: {
+    title: string
+  }[]
+}
 
 const Detail = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const params = route.params as Params;
+  const [data, setData] = useState<Data>({ 
+    point: {
+      id: -1, 
+      name: '',
+      image: 'http://', 
+      city: '', 
+      uf: '', 
+      whatsapp: '', 
+      email: ''
+    }, 
+    items: [] 
+  });
+
+  function handleWhatsappMessage() {
+    Linking.openURL(`whatsapp://send?phone=${data.point.whatsapp}&text=Tenho interesse sobre a coleta de resíduos`)
+  }
+
+  function handleMailComposer() {
+    MailComposer.composeAsync({
+      subject: 'Interesse na coleta de resíduos',
+      recipients: [data.point.email]
+    });
+  }
 
   function handleNavigationBackwards() {
     navigation.navigate('Points');
   }
+
+  if(!data.point) {
+    return null;
+  }
+
+  useEffect(() => {
+    api.get(`points/${params.pointId}`).then((response) => {
+      setData(response.data);
+    });
+  }, [data.point])
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -19,26 +75,26 @@ const Detail = () => {
         </TouchableOpacity>
 
         <Image source={{
-          uri: 'https://live.staticflickr.com/4123/4857121027_6a65047cbe_b.jpg'
+          uri: data.point.image
         }}
         style={styles.pointImage}
         />
 
-        <Text style={styles.pointName}>Mercadão do João</Text>
-        <Text style={styles.pointItems}>Baterias, Pilhas etc</Text>
+        <Text style={styles.pointName}>{data.point.name}</Text>
+        <Text style={styles.pointItems}>{data.items.map(item => item.title).join(', ')}</Text>
 
         <View style={styles.address}>
           <Text style={styles.addressTitle}>Endereço</Text>
-          <Text style={styles.addressContent}>Belo Horizonte/MG</Text>
+          <Text style={styles.addressContent}>{data.point.city},{data.point.uf}</Text>
         </View>
       </View>
 
       <View style={styles.footer}>
-        <RectButton style={styles.button}>
+        <RectButton style={styles.button} onPress={handleWhatsappMessage}>
           <FontAwesome name='whatsapp' size={20} color='#fff' />
           <Text style={styles.buttonText}>Whatsapp</Text>
         </RectButton>
-        <RectButton style={styles.button}>
+        <RectButton style={styles.button} onPress={handleMailComposer}>
           <Icon name='mail' size={20} color='#fff' />
           <Text style={styles.buttonText}>E-mail</Text>
         </RectButton>
